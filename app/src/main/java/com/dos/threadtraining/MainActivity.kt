@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun doCounterExample() {
-        val counter = Counter()
+        val counter = CounterCoroutines()
         val job1 = GlobalScope.launch {
             repeat(1000) {
                 counter.increment()

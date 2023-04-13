@@ -3,41 +3,42 @@ package com.dos.threadtraining
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import java.lang.Runnable
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "ThreadTraining-LOG"
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         doWork()
         doWorkWithCoroutines()
-        doCounterExample()
+        GlobalScope.launch {
+            withContext(Dispatchers.Main){
+                doCounterExample()
+            }
+        }
     }
 
-    private fun doCounterExample() {
+    private suspend fun doCounterExample() {
         val counter = Counter()
-        val thread1 = Thread {
-            for (i in 1..1000) {
+        val job1 = GlobalScope.launch {
+            repeat(1000) {
                 counter.increment()
                 Log.d(TAG, "Thread 1: " + counter.getCount());
             }
         }
-        val thread2 = Thread {
-            for (i in 1..1000) {
+        val job2 = GlobalScope.launch {
+            repeat(1000) {
                 counter.increment()
                 Log.w(TAG, "Thread 2: " + counter.getCount());
             }
         }
-        thread1.start()
-        thread2.start()
-        thread1.join()
-        thread2.join()
-
+        job1.join()
+        job2.join()
         Log.i(TAG, "Final count: ${counter.getCount()}");
     }
 

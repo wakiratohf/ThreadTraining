@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         doWork()
         doWorkWithCoroutines()
         GlobalScope.launch {
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {// switch to main thread
                 doCounterExample()
             }
         }
@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         }
         job1.join()
         job2.join()
+        counter.close()
         Log.i(TAG, "Final count: ${counter.getCount()}");
     }
 
